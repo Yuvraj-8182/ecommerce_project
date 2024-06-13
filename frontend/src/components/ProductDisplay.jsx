@@ -37,8 +37,9 @@ const ProductDisplay = (props) => {
             <p>(111)</p>
           </div>
           <div className="flex gap-x-6 medium-20 my-4">
-            <div className="line-through">{product.old_price}</div>
-            <div className="text-secondary">{product.new_price}</div>
+          <div className="bold-16">${product.new_price}.00</div>
+            <div className="line-through text-secondary">${product.old_price}.00</div>
+            
           </div>
           <div className="mb-4">
             <h4 className="bold-16">Select Size:</h4>

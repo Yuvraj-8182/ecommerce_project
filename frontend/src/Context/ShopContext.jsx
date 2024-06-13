@@ -1,12 +1,12 @@
-import { createContext,useState } from "react";
-import all_products from "../assets/all_products";
+import { createContext,useEffect,useState } from "react";
+//import all_products from "../assets/all_products";
 
 
 export const ShopContext = createContext(null);
 
 const getDefaultCart = () =>{
     let cart = {};
-    for (let index = 0; index < all_products.length + 1; index++) {
+    for (let index = 0; index < 300 + 1; index++) {
         cart[index] = 0;
     }
     return cart
@@ -14,18 +14,33 @@ const getDefaultCart = () =>{
 
 const ShopContextProvider = (props) =>{
     const [cartItems, setCartItems] = useState(getDefaultCart());
-    
+    const [all_products, setAll_products] = useState([]);
+
+    useEffect(()=> {
+        fetch("http://localhost:4000/allproducts").then((Response)=> Response.json()).then((data)=> setAll_products(data));
+    },[])
 
     const addToCart = (itemId) => {
            setCartItems((prev) => ({...prev, [itemId]:prev[itemId]+1}))
-           console.log(cartItems)
+           //console.log(cartItems)
+           if(localStorage.getItem('auth-token')){
+            fetch("http://localhost:4000/addcart",{
+                method:'POST',
+                headers:{
+                    Accept:'application/from-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'content-Type':'application/json',
+                },
+                body:JSON.stringify({itemId:itemId}),
+            }).then((Response)=> Response.json()).then((data)=>console.log(data));
+           }
     }
     const removeFromCart = (itemId) => {
         setCartItems((prev) => ({...prev, [itemId]:prev[itemId]-1}))
     }
 
     const getTotalCartAmount = () =>{
-        let totalAmount = 0;
+        let totalAmount = 0;                   
         for(const item in cartItems)
         {
             if(cartItems[item] > 0)
@@ -54,7 +69,7 @@ const ShopContextProvider = (props) =>{
 
 
 
-   console.log(cartItems);    
+  // console.log(cartItems);    
 
     return(
         <ShopContext.Provider value={contextValue}>
